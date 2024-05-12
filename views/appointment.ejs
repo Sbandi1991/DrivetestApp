@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <%- include('layouts/header') -%>
+
+    </head>
+
+    <body>
+       
+          <!-- Navigation-->
+          <%- include('layouts/navbar'); -%>
+
+          <!-- Page Header-->
+          <header class="masthead" style="background-image: url('assets/img/TestTwo.jpg')">
+            <div class="container position-relative px-4 px-lg-5">
+                <div class="row gx-4 gx-lg-5 justify-content-center">
+                    <div class="col-md-10 col-lg-8 col-xl-7">
+                        <div class="site-heading">
+                            <h1>Appointment</h1>
+                            <span class="subheading">Admin create new Appointment</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+          </header>
+        <main>
+            <article class="mb-4">
+                <div class="container px-4 px-lg-5">
+                    <div class="row gx-4 gx-lg-5 justify-content-center">
+                        <div class="col-md-10 col-lg-8 col-xl-7">
+
+                            <div>
+                                <% if(errors != null && errors.length > 0) { %>
+                                    <ul class="list-group">
+                                        <% for(var i = 0; i < errors.length; i++) { %>
+                                            <li class="list-group-item list-group-item-danger"><%= errors[i] %></li>
+                                        <% } %>
+                                    </ul>
+                                <% } %>
+                            </div>
+                            
+                            <form action="/create/appointment" id="appointmentForm" method="POST">
+                                <div class="form-floating">
+                                    <input type="date" class="form-control" id="date" name="date" min="<%= new Date().toISOString().split('T')[0] %>">
+                                    <label for="date">Select Date</label>
+                                </div>
+                                <div id="timeSlotsContainer"></div>
+
+                                <br>
+                                <br>
+
+                                <div class="text-center">
+                                    <button type="submit" class="btn btn-primary" id="submitButton">Create Appointment</button>
+                                </div>
+                            </form>
+
+
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+        </main>
+
+    </br>
+    <!-- Footer-->
+    <%- include('layouts/footer'); -%>
+  
+    <!--Scripts-->
+    <%- include('layouts/scripts'); -%>
+
+    <script>
+       document.addEventListener("DOMContentLoaded", function() {
+       document.getElementById('date').addEventListener('change', function () {
+            const selectedDate = document.getElementById('date').value;
+            const submitButton = document.getElementById('submitButton');
+            const form = document.getElementById('appointmentForm');
+            const arrayTimeSlots=[];
+            if (selectedDate) {
+                fetch(`/gettimeslots?date=${selectedDate}`)
+                    .then(response => response.json())
+                    .then(data => {
+                       console.log('data..!!',data)
+                       const selectedTimeSlots = data.map(appointment => appointment.time);
+                        const timeSlotsContainer = document.getElementById('timeSlotsContainer');
+                        timeSlotsContainer.innerHTML = ''; // Clear previous content
+                        const staticTimeSlots = ['10:00 AM', '11:00 AM', '12:00 PM', '1:00 PM', '2:00 PM', '3:00 PM', '4:00 PM', '5:00 PM'];
+                            staticTimeSlots.forEach(slot => {
+                            const isChecked = selectedTimeSlots.includes(slot);
+                            const checkboxAttributes = isChecked ? 'checked disabled' : '';
+                            if(checkboxAttributes!=''){
+                                arrayTimeSlots.push(slot)
+                            }
+                            const timeSlotElement = document.createElement('div');
+                            timeSlotElement.innerHTML = `
+                                <input type="checkbox" id="${slot}" name="time" value="${slot}" ${checkboxAttributes}>
+                                <label for="${slot}">${slot}</label>
+                            `;
+                            timeSlotsContainer.appendChild(timeSlotElement);
+                        });
+                        if(arrayTimeSlots.length>=8){
+                                submitButton.disabled =true
+                            }
+                    
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                    });
+            }
+        });
+    })
+    </script>
+    </body>
+</html>

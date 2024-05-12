@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <%- include('layouts/header') -%>
+      
+       
+    </head>
+    <body>
+        <!-- Navigation-->
+        <%- include('layouts/navbar'); -%>
+
+        <!-- Page Header-->
+        <header class="masthead" style="background-image: url('assets/img/TestTwo.jpg')">
+           
+        </header>
+
+        <!-- Main Content-->
+        <main>
+            <div class="container px-4 px-lg-5">
+                <div class="row gx-4 gx-lg-5 justify-content-center">
+                    <div class="col-md-10 col-lg-8 col-xl-7">
+                 
+                       <div class="mb-4">
+                        <!--success message-->
+                        <div  class="<%= issuccess ? 'enable-div' : 'disabled-div' %>" id="submitSuccessMessage">
+                            <div class="text-center mb-3">
+                                <div class="fw-bolder">Form submission successful!</div>
+                                <br />
+                            </div>
+                        </div>
+
+                        <div  class="<%= isappsuccess ? 'app-enable-div' : 'app-disabled-div' %>" id="appoinmentMessage">
+                            <div class="text-center mb-3">
+                                <div class="fw-bolder">Appointment booked successful!</div>
+                                <br />
+                            </div>
+                        </div>
+
+                        <div  class="<%= isapperror ? 'app-enable-div' : 'app-disabled-div' %>" id="appErrorMessage">
+                            <div class="text-center text-danger mb-3">Appointment Already Booked</div></div>
+
+
+                        <form action="/book/appointment/G2" method="post">
+                            <div class="form-floating">
+                                <input type="date" class="form-control" id="date" name="date" min="<%= new Date().toISOString().split('T')[0] %>">
+                                    <label for="date">Book Appointment</label>
+                        </div>
+                        <div id="timeSlotsContainer"></div>
+                                    </br>
+                                    <div class="text-center">
+                                        <button type="submit" class="btn btn-primary" id="submitButton">Book Appointment</button>
+                                    </div>
+                        </form>
+                     <!--Personal Information Form-->
+                     <% if(!userDetails) { %>
+                        <h2>Personal Information</h2>
+                            <form action="/posts/user" method="POST"  id="personalInfo">
+                                <div class="form-floating">  
+                                    
+                                    <input class="form-control" id="firstName" name="firstName" type="text" required />
+                                    <label for="firstName">First Name</label>
+                                </div>
+                                <div class="form-floating">  
+                                    <input class="form-control" id="lastName" name="lastName" type="text" required />
+                                    <label for="lastName">Last Name</label>
+                                </div>
+                                <div class="form-floating">  
+                                    <input class="form-control" id="licenseNumber"  name="licenseNumber" type="text"  pattern="[a-zA-Z0-9]{8}" title="Please enter a valid 8-character alphanumeric license number." required/>
+                                    <label for="licenseNumber">License Number</label>
+                                </div> 
+                                <div class="form-floating">
+                                    <input class="form-control" id="age" type="number" name="age" min="18" max="120" pattern="\d+" title="Please enter a valid age between 18 and 120" required />
+                                    <label for="age">Age</label>
+                                </div>                                
+
+                                <div class="form-floating">  
+                                    <input type="date" class="form-control" id="dob" name="dob" required>
+                                    <label for="dob">Date of Birth</label>
+                                </div>
+                            
+                       </div>
+                       <!--Car Details Form-->
+                       <div class="mb-4">
+                        <h2>Car Details</h2>
+                            
+                                <div class="form-floating">
+                                    <input type="text" class="form-control" id="make" name="make"  required>
+                                    <label for="make">Make</label>
+                                </div>
+                                <div class="form-floating">   
+                                    <input type="text" class="form-control" id="model" name="model" required>
+                                    <label for="model">Model</label>
+                                </div>
+                                <div class="form-floating">
+                                    <input type="number" class="form-control" id="year" name="year" min="1900" max="<%= new Date().getFullYear() %>" required>
+                                    <label for="year">Year</label>
+                                </div>
+                                <div class="form-floating">
+                                    <input type="text" class="form-control" id="platNumber" name="platNumber"  pattern="[a-zA-Z0-9]{8}" title="Please enter a valid 8-character alphanumeric Plate Number." required>
+                                    <label for="platNumber">Plate Number</label>
+                                </div>
+                            
+                        </div>
+                    </br>
+                    <!--Submit button-->
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-primary" id="submitButton">Submit</button>
+                        </div>
+                </form>
+               <% } else {%>
+                <form>
+                    <h3>User Information</h3>
+
+                                <div class="form-floating">
+                                    <input class="form-control" id="firstName" name="firstName" type="text"
+                                        value="<%= userDetails.firstName %>" readonly/>
+                                         <label for="firstName">First Name</label>
+                                </div>
+                                <div class="form-floating">
+                                    <input class="form-control" id="lastName" name="lastName" type="text"
+                                        value="<%= userDetails.lastName %>" readonly />
+                                    <label for="lastName">Last Name</label>
+                                </div>
+                                <div class="form-floating">
+                                    <input class="form-control" id="licenseNumber" name="licenseNumber"
+                                        value="<%= userDetails.licenseNumber %>" type="text" readonly />
+                                    <label for="licenseNumber">License Number</label>
+                                </div>
+                                <div class="form-floating">
+                                    <input class="form-control" id="age" type="text" name="age" value="<%= userDetails.age %>"
+                                        readonly />
+                                    <label for="age">Age</label>
+                                </div>
+
+                                <div class="form-floating">
+                                    <input type="text" class="form-control" id="dob" name="dob" value="<%= userDetails.dob %>"
+                                        readonly>
+                                    <label for="dob">Date of Birth</label>
+                                </div>
+                                <!-- Form to update car information -->
+                                <h3>Car Information</h3>
+
+                                <div class="form-floating">
+
+                                    <input type="text" class="form-control" id="make" name="make"
+                                        value="<%= userDetails.car_details.make %>" readonly>
+                                    <label for="make">Make</label>
+                                </div>
+                                <div class="form-floating">
+
+                                    <input type="text" class="form-control" id="model" name="model"
+                                        value="<%= userDetails.car_details.model %>" readonly>
+                                    <label for="model">Model</label>
+                                </div>
+                                <div class="form-floating">
+                                    <input type="number" class="form-control" id="year" name="year"
+                                        value="<%= userDetails.car_details.year %>" readonly>
+                                    <label for="year">Year</label>
+                                </div>
+                                <div class="form-floating">
+                                    <input type="text" class="form-control" id="platNumber" name="platNumber"
+                                        value="<%= userDetails.car_details.platNumber %>" readonly>
+                                    <label for="platNumber">Plate Number</label>
+                                </div>
+                                <br>
+                              
+                </form>
+             <%}%>
+
+            
+
+            </div>   
+                </div>
+            </div>
+        </main>
+    </br>
+        <!-- Footer-->
+        <%- include('layouts/footer'); -%>
+      
+        <!--Scripts-->
+        <%- include('layouts/scripts'); -%>
+        <script>
+   // Inside your frontend script
+   document.addEventListener("DOMContentLoaded", function() {
+document.getElementById('date').addEventListener('change', function () {
+    const selectedDate = document.getElementById('date').value;
+    const timeSlotsContainer = document.getElementById('timeSlotsContainer'); // Assuming this is the container for time slots
+
+    if (selectedDate) {
+        fetch(`/gettimeslots?date=${selectedDate}`)
+            .then(response => response.json())
+            .then(data => {
+                // Clear previous content
+                timeSlotsContainer.innerHTML = '';
+                timeSlotsContainer.textContent='';
+                
+                     console.log('data..!!',data)
+                     console.log('data..!!',data.length)
+
+                // Render time slots
+                if (data && data.length > 0) {
+                    let count=0;
+                data.forEach(slot => {
+
+                    if (slot.isTimeSlotAvailable) { // Check if time slot is available
+                        const timeSlotElement = document.createElement('div');
+                        timeSlotElement.innerHTML = `
+                            <input type="radio" id="${slot.time}" name="time" value="${slot.time}">
+                            <label for="${slot.time}">${slot.time}</label>
+                        `;
+                        timeSlotsContainer.appendChild(timeSlotElement);
+                        count=count+1;
+                    }
+                    console.log('count..!!',count)
+
+                    
+                });
+                if (count === 0) {
+                        console.log('heloo..count')
+                        timeSlotsContainer.textContent = 'No booked time slots for selected date';
+
+                    }
+            }else{
+                console.log('heloo..date')
+
+                timeSlotsContainer.textContent = 'No booked time slots for selected date';
+            }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    }
+});
+
+document.getElementById("personalInfo").addEventListener("submit", function(event) {
+                const yearInput = document.getElementById("year");
+                const currentYear = new Date().getFullYear();
+                const enteredYear = parseInt(yearInput.value);
+                
+                
+                if (enteredYear > currentYear) {
+                    alert("Year cannot be greater than the current year");
+                    event.preventDefault();
+                }
+            });
+
+});
+
+
+
+
+       </script>
+    </body>
+</html>

@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('layouts/header') -%>
+</head>
+
+<body>
+    <!-- Navigation -->
+    <%- include('layouts/navbar'); -%>
+
+    <header class="masthead" style="background-image: url('assets/img/TestTwo.jpg')">
+        <div class="container position-relative px-4 px-lg-5">
+            <div class="row gx-4 gx-lg-5 justify-content-center">
+                <div class="col-md-10 col-lg-8 col-xl-7">
+                    <div class="site-heading">
+                        <h1>Examiner</h1>
+                        <span class="subheading">Admin create new Appointment</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <article class="mb-4">
+            <div class="container px-4 px-lg-5">
+                <div class="row gx-4 gx-lg-5 justify-content-center">
+                    <div class="col-md-10 col-lg-8 col-xl-7">
+                        <!-- Filter by Test Type -->
+                        <div class="filter">
+                            <label>Filter by Test Type:</label>
+                            <div class="radioInp" style="display: flex;">
+                                <div>
+                                    <input type="radio" id="g2-test" name="test-type" value="G2">
+                                    <label for="g2-test">G2 Test</label>
+                                </div> &nbsp; &nbsp;
+                                <div>
+                                    <input type="radio" id="g-test" name="test-type" value="G">
+                                    <label for="g-test">G Test</label>
+                                </div>
+                            </div>
+                        </div>
+                                                <br>
+
+                        <!-- Bookings list -->
+                        <div class="filter">
+                            <label>Select Appointment:</label>
+                            <select id="appointment-select">
+                                
+                                <!-- Appointments will be dynamically populated here -->
+                            </select>
+                        </div>
+
+                        
+                        <br>
+
+                        <div id="user-details">
+                            <form action="/post/examiner" method="POST" id="evaluation-form">
+                                <h3>User Information</h3>
+
+                                <div class="form-floating">
+                                    <input class="form-control" id="user-name" name="user-name" type="text" readonly/>
+                                    <label for="user-name">Name</label>
+                                </div>
+                                <div class="form-floating">
+                                    <input class="form-control" id="appointment-type" name="appointment-type" type="text" readonly />
+                                    <label for="appointment-type">Appointment Type</label>
+                                </div>
+                                <div class="form-floating">
+                                    <input class="form-control" id="appointment-date" name="date" type="date" readonly />
+                                    <label for="appointment-date">Date</label>
+                                </div>
+                                <div class="form-floating">
+                                    <input class="form-control" id="appointment-time" name="time" type="text" readonly />
+                                    <label for="appointment-time">Time</label>
+                                </div>
+                                <div class="form-floating">
+                                    <input class="form-control" id="plate-number" name="plate-number" type="text" readonly />
+                                    <label for="plate-number">Plate Number</label>
+                                </div>
+                                <div class="form-floating">
+                                    <textarea class="form-control" id="comment" name="Comment" ></textarea>
+                                    <label for="comment">Comment</label>
+                                </div>
+                                <br>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" id="pass-radio" name="result" value="pass">
+                                    <label class="form-check-label" for="pass-radio">Pass</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" id="fail-radio" name="result" value="fail">
+                                    <label class="form-check-label" for="fail-radio">Fail</label>
+                                </div>
+                                
+                                <br>
+                                <br>
+                               <div class="text-center">
+                            <button type="submit" class="btn btn-primary" id="submitButton">Submit</button>
+                        </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </article>
+    </main>
+
+    <!-- Footer-->
+    <%- include('layouts/footer'); -%>
+    <!-- Scripts -->
+    <%- include('layouts/scripts'); -%>
+    <script>
+       document.addEventListener("DOMContentLoaded", function() {
+
+    function fetchAllAppointments() {
+        setDfault();
+        fetch(`/api/bookings`)
+            .then(response => response.json())
+            .then(appointments => {
+                const appointmentSelect = document.getElementById('appointment-select');
+                appointmentSelect.innerHTML = '';
+
+                appointments.forEach(appointment => {
+                    const option = document.createElement('option');
+                  
+                    // Format date and time as "date:time"
+                    const options = {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+};
+
+const date = new Date(appointment.date);
+date.setDate(date.getDate() + 1); // Adjust the date by adding one day
+const formattedDateTime = date.toLocaleDateString('en-US', options) + ` ${appointment.time}`;
+                    option.text = formattedDateTime;
+                    option.value = appointment.id; // Set value to appointment ID if needed
+                    appointmentSelect.appendChild(option);
+                });
+
+            })
+            .catch(error => console.error('Error fetching appointments:', error));
+    }
+
+    
+    document.getElementById('appointment-select').addEventListener('change', function(event) {
+        const selectedAppointmentId = event.target.value;
+        console.log('selectedAppointmentId...!!',selectedAppointmentId)
+        setDfault();
+
+        if (selectedAppointmentId) {
+            // Make AJAX request to fetch user details for selected appointment
+            fetch(`/user-details/${selectedAppointmentId}`)
+                .then(response => response.json())
+                .then(userDetails => {
+                    // Display user details
+                    console.log('userDetails...!!',userDetails)
+                    document.getElementById('user-name').value = `${userDetails.firstName} ${userDetails.lastName}`;
+                    document.getElementById('appointment-type').value = userDetails.appointmentType;
+                    document.getElementById('appointment-date').value = new Date(userDetails.date).toISOString().split('T')[0];
+                    document.getElementById('appointment-time').value = userDetails.time;
+                    document.getElementById('plate-number').value = userDetails.platNumber;
+                    document.getElementById('comment').value = userDetails.Comment;
+                  console.log('testresult..!!',userDetails.testResult)
+                    if(userDetails.testResult===true){
+                        document.getElementById('pass-radio').checked=true; 
+                   }
+                   if(userDetails.testResult===false){
+                    document.getElementById('fail-radio').checked=true; 
+                   }
+                
+                    
+  
+                })
+                .catch(error => console.error('Error fetching user details:', error));
+        } else {
+            // Clear user details if no appointment is selected
+            document.getElementById('user-details').innerHTML = '';
+        }
+    });
+
+    function fetchAppointments(testType) {
+
+        setDfault();
+
+    fetch(`/api/testtype?testType=${testType}`)
+        .then(response => response.json())
+        .then(appointments => {
+            const appointmentSelect = document.getElementById('appointment-select');
+            appointmentSelect.innerHTML = '';
+
+            appointments.forEach(appointment => {
+                const option = document.createElement('option');
+                const options = {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                };
+                const date = new Date(appointment.date);
+                date.setDate(date.getDate() + 1); // Adjust the date by adding one day
+                const formattedDateTime = date.toLocaleDateString('en-US', options) + ` ${appointment.time}`;
+                option.text = formattedDateTime;
+                option.value = appointment._id; // Set value to appointment ID if needed
+                appointmentSelect.appendChild(option);
+            });
+
+            console.log('length...!!',appointmentSelect.options.length)
+                if (appointmentSelect.options.length === 1) {
+                appointmentSelect.dispatchEvent(new Event('change'));
+            }
+        })
+        .catch(error => console.error('Error fetching appointments:', error));
+}
+
+function setDfault(){
+    document.getElementById('user-name').value = '';
+                    document.getElementById('appointment-type').value = '';
+                    document.getElementById('appointment-date').value = '';
+                    document.getElementById('appointment-time').value = '';
+                    document.getElementById('plate-number').value = '';
+                    document.getElementById('comment').value ='';                    
+                    document.getElementById('fail-radio').checked = false;
+                    document.getElementById('pass-radio').checked = false;
+
+}
+    document.querySelectorAll('input[name="test-type"]').forEach(radio => {
+    radio.addEventListener('change', function(event) {
+        const testType = event.target.value;
+        fetchAppointments(testType);
+    });
+});
+
+fetchAllAppointments();
+
+});
+
+
+    </script>
+</body>
+</html>

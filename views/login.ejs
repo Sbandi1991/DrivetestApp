@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('layouts/header'); -%>
+    <style>
+        .form-container {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .form-wrapper {
+            flex: 0 0 48%; /* Adjust the width as needed */
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+
+        
+        .form-wrapper h2 {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .form-wrapper .form-floating {
+            margin-bottom: 20px;
+        }
+
+        .form-wrapper .text-center {
+            text-align: center;
+        }
+
+        .form-wrapper .btn {
+            width: 100%;
+        }
+
+        /* Custom dropdown styles */
+        .custom-select-wrapper {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .custom-select {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            appearance: none;
+            cursor: pointer;
+        }
+
+        .custom-select::after {
+            content: '\25BC';
+            position: absolute;
+            top: 50%;
+            right: 10px;
+            transform: translateY(-50%);
+        }
+
+        /* Hide the original select element */
+        select {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation-->
+    <%- include('layouts/navbar'); -%>
+
+    <!-- Page Header-->
+    <header class="masthead" style="background-image: url('assets/img/Login.jpeg')">
+        
+    </header>
+    <!-- Main Content-->
+    <main class="mb-4">
+        <div class="container px-4 px-lg-5">
+            <div class="row gx-4 gx-lg-5 justify-content-center">
+                <div class="col-md-10 col-lg-8 col-xl-7">
+                    <div class="my-1">
+                        <div>
+                        <% if(errors != null && errors.length > 0) { %>
+                            <ul class="list-group">
+                                <% for(var i = 0; i < errors.length; i++) { %>
+                                    <li class="list-group-item list-group-item-danger"><%= errors[i] %></li>
+                                <% } %>
+                            </ul>
+                        <% } %>
+                    </div>
+                    <br>
+                        <!-- Sign Up and Login Form -->
+                        <div class="form-container">
+                            <!-- Login Form -->
+                            <div class="form-wrapper">
+                                <h2>Login</h2>
+                                <div class="loginClass">
+                                    <form action="/login/user" method="POST">   
+                                        <div class="form-floating">
+                                            <input class="form-control" id="userName" type="text" name="userName" placeholder="Enter your UserName..."  />
+                                            <label for="userName">User Name</label>
+                                        </div>
+                                        <div class="form-floating">
+                                            <input class="form-control" id="password" type="password" name="password" placeholder="Enter your password..." />
+                                            <label for="password">Password</label>
+                                        </div>
+                                        
+                                        <br/>
+                                        <!-- Login button -->
+                                        <div class="text-center">   
+                                            <button class="btn btn-primary text-uppercase" id="loginButton" type="login">Login</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <!-- Signup Form -->
+                            <div class="form-wrapper">
+                                <h2>Sign Up</h2>
+                                <div class="signUpClass">
+                                    <form action="/signup/user" method="POST">
+                                        <div class="form-floating">
+                                            <input class="form-control" id="userName" type="text" name="userName" placeholder="Enter your UserName..."  />
+                                            <label for="Name">User Name</label>
+                                        </div>
+                                        <div class="form-floating">
+                                            <input class="form-control" id="passWord" type="password" name="passWord" placeholder="Enter your password..." />
+                                            <label for="psw">Password</label>
+                                        </div>
+                                        <div class="form-floating">
+                                            <input class="form-control" id="confirmpsw" type="password" name="confirmpsw" placeholder="Enter your password..." />
+                                            <label for="confirmpsw">Confirm Password</label>
+                                        </div>
+                                        <!-- Custom dropdown -->
+                                        <div class="custom-select-wrapper">
+                                            <label for="userType">User Type</label>
+                                            <select id="userType" class="custom-select" name="userType">
+                                                <option value="Driver">Driver</option>
+                                                <option value="Examiner">Examiner</option>
+                                                <option value="Admin">Admin</option>
+                                            </select>
+                                        </div>
+                                        <br>
+                                        <br>
+                                        <!-- Sign up button -->
+                                        <div class="text-center">   
+                                            <button class="btn btn-primary text-uppercase" id="signUp" type="signup">SignUp</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <!-- Footer-->
+    <%- include('layouts/footer'); -%>
+  
+    <!--Scripts-->
+    <%- include('layouts/scripts'); -%>
+
+</body>
+</html>

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <%- include('layouts/header') -%>
+    </head>
+    <body>
+        <%- include('layouts/navbar'); -%>
+        <header class="masthead" style="background-image: url('assets/img/TestTwo.jpg')">
+            <div class="container position-relative px-4 px-lg-5">
+                <div class="row gx-4 gx-lg-5 justify-content-center">
+                    <div class="col-md-10 col-lg-8 col-xl-7">
+                        <div class="site-heading">
+                            <h1>Driver DashBoard</h1>
+                            <span class="subheading">Welcome to Driver DashBoard</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <main>
+            <article class="mb-4">
+                <div class="container px-4 px-lg-5">
+                    <div class="row gx-4 gx-lg-5 justify-content-center">
+                        <div class="col-md-10 col-lg-8 col-xl-7">
+                           <% if(user){%>
+                            <div class="appointment-details">
+                                <h2>APPT BOOKED:</h2>
+                                <p>DATE: <%= date %></p>
+                                <p>Time: <%= time %></p>
+                                <%if(user.adminCheck) {%>
+                               
+                                <% if (user.testResult === true) { %>
+                                    <p>Status: Pass</p>
+                                    <p>Comments (from examiner): <%= user.Comment %></p>
+                                    <p>License generated. Congratulations!</p>
+                                <% } else if (user.testResult=== false) { %>
+                                    <p>Status: Fail</p>
+                                    <p>Comments (from examiner): <%= user.Comment %></p>
+                                    <p>You need to re-take your <%= user.appointmentType %> test.</p>
+                                <% }%>
+                                   <%}else{%> 
+                                    <p>Status: Pending</p>
+                                    <p>Pending: The appointment is not evaluated yet.</p>
+
+                                    <%}%>
+                            </div>
+                                
+
+                            <% } else { %>
+                                <p>No appointment found.</p>
+                            <% } %>
+                    
+
+                            </div>
+                            </div>
+                            </div>
+                            </article>
+                        </main>
+    </body>
+
+     <!-- Footer-->
+     <%- include('layouts/footer'); -%>
+     <!-- Scripts -->
+     <%- include('layouts/scripts'); -%>
+</html>

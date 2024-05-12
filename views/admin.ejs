@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <%- include('layouts/header') -%>
+    
+        <style>
+            .form-container {
+                border: 1px solid #ccc; /* Add border */
+                padding: 10px; /* Add some padding for spacing */
+                margin-bottom: 20px; /* Add margin bottom for spacing between forms */
+                max-width: 350px;
+                position: relative;
+            }
+
+            #submitButton {
+    font-size: 14px; /* Adjust the font size as needed */
+    padding: 5px 10px; /* Adjust the padding to change the button size */
+    position: absolute; /* Set position to absolute */
+    top: 10px; /* Adjust top position */
+    right: 10px; /* Adjust right position */
+}
+        </style>
+
+
+        </head>
+
+        <body>
+             <!-- Navigation-->
+          <%- include('layouts/navbar'); -%>
+
+          <!-- Page Header-->
+          <header class="masthead" style="background-image: url('assets/img/TestTwo.jpg')">
+            <div class="container position-relative px-4 px-lg-5">
+                <div class="row gx-4 gx-lg-5 justify-content-center">
+                    <div class="col-md-10 col-lg-8 col-xl-7">
+                        <div class="site-heading">
+                            <h1>Admin</h1>
+                            <span class="subheading">Welcome to admin page</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+          </header>
+          <main>
+            <article class="mb-4">
+                <div class="container px-4 px-lg-5">
+                    <div class="row gx-4 gx-lg-5 justify-content-center">
+                        <div class="col-md-10 col-lg-8 col-xl-7">
+                            <div class="filter">
+                                <label>Filter by Test Type:</label>
+                                <div class="radioInp" style="display: flex;">
+                                    <div>
+                                        <input type="radio" id="g2-test" name="test-type" value="G2">
+                                        <label for="g2-test">G2 Test</label>
+                                    </div> &nbsp; &nbsp;
+                                    <div>
+                                        <input type="radio" id="g-test" name="test-type" value="G">
+                                        <label for="g-test">G Test</label>
+                                    </div>
+                                </div>
+                            </div>
+                             <br>
+
+                             <div class="filter">
+                                <h3>User Information</h3>
+
+                             </div>
+                             <div id="user-details" class="container px-4 px-lg-5">
+                                
+                             </div>
+
+
+                            </div>
+                            </div>
+                            </div>
+                            </article>
+
+          </main>
+
+          <!-- Footer-->
+    <%- include('layouts/footer'); -%>
+    <!-- Scripts -->
+    <%- include('layouts/scripts'); -%>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            function fetchAppointments(testType) {
+                fetch(`/api/getdriverresults?testType=${testType}`)
+                    .then(response => response.json())
+                    .then(driverDetails => {
+                        console.log('driverDetails..!!', driverDetails);
+    
+                        const userDetailsDiv = document.getElementById('user-details');
+                        userDetailsDiv.innerHTML = '';
+    
+                        driverDetails.forEach(driverDetail => {
+                            const userId=driverDetail._id;
+                            const form = document.createElement('form');
+                            form.setAttribute('action', '/post/admin/' + userId);
+                            form.setAttribute('method', 'POST');
+                            form.setAttribute('id', 'evaluation-form');
+                            form.classList.add('form-container'); // Add class for styling
+    
+                           
+    
+                            // Display name and test result as spans
+                            const nameSpan = document.createElement('span');
+                            nameSpan.textContent = `Name: ${driverDetail.firstName}`;
+                            form.appendChild(nameSpan);
+
+                            form.appendChild(document.createElement('br'));
+
+    
+                            const testResultSpan = document.createElement('span');
+                            testResultSpan.textContent = `Result: ${driverDetail.testResult ? 'Pass' : 'Fail'}`;
+                            form.appendChild(testResultSpan);
+                           
+                            const submitButton = document.createElement('button');
+                            if(driverDetail.testResult){
+                                submitButton.setAttribute('type', 'submit');
+                            submitButton.setAttribute('id', 'submitButton');
+                            submitButton.textContent = 'Generate License';
+                            form.appendChild(submitButton);
+                            }else{
+                                submitButton.setAttribute('type', 'submit');
+                            submitButton.setAttribute('id', 'submitButton');
+                            submitButton.textContent = 'Retake Test';
+                            form.appendChild(submitButton);
+                            }
+                           
+    
+                            userDetailsDiv.appendChild(form);
+                        });
+                    })
+                    .catch(error => console.error('Error fetching driver details:', error));
+            }
+    
+            document.querySelectorAll('input[name="test-type"]').forEach(radio => {
+                radio.addEventListener('change', function(event) {
+                    const testType = event.target.value;
+                    fetchAppointments(testType);
+                });
+            });
+        });
+    </script>
+    
+            </body>
+</html>
